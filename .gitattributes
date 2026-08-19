@@ -1,0 +1,110 @@
+# ============================================================
+# Unreal Engine Git LFS 설정
+# ============================================================
+# 대용량 바이너리 파일은 Git LFS를 사용합니다.
+# 텍스트 기반 비교 및 병합이 어려운 파일을 대상으로 합니다.
+
+
+# ============================================================
+# Unreal Engine Assets
+# ============================================================
+
+# Unreal Asset
+*.uasset filter=lfs diff=lfs merge=lfs -text
+
+# Unreal Map
+*.umap filter=lfs diff=lfs merge=lfs -text
+
+
+# ============================================================
+# 3D Model
+# ============================================================
+
+# 3D Model
+*.fbx filter=lfs diff=lfs merge=lfs -text
+
+# Autodesk 3D Studio
+*.3ds filter=lfs diff=lfs merge=lfs -text
+
+# Wavefront
+*.obj filter=lfs diff=lfs merge=lfs -text
+
+
+# ============================================================
+# Texture
+# ============================================================
+
+# PNG
+*.png filter=lfs diff=lfs merge=lfs -text
+
+# JPEG
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+
+# TGA
+*.tga filter=lfs diff=lfs merge=lfs -text
+
+# Photoshop
+*.psd filter=lfs diff=lfs merge=lfs -text
+
+# HDR Image
+*.hdr filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+
+
+# ============================================================
+# Audio
+# ============================================================
+
+# Wave
+*.wav filter=lfs diff=lfs merge=lfs -text
+
+# MP3
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+
+# OGG
+*.ogg filter=lfs diff=lfs merge=lfs -text
+
+
+# ============================================================
+# Video
+# ============================================================
+
+# MP4
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# WebM
+*.webm filter=lfs diff=lfs merge=lfs -text
+
+
+# ============================================================
+# Animation
+# ============================================================
+
+# FBX Animation
+# FBX는 위의 3D Model 항목에서 이미 LFS 처리됩니다.
+
+
+# ============================================================
+# Font
+# ============================================================
+
+# TrueType Font
+*.ttf filter=lfs diff=lfs merge=lfs -text
+
+# OpenType Font
+*.otf filter=lfs diff=lfs merge=lfs -text
+
+
+# ============================================================
+# Archive
+# ============================================================
+
+# ZIP
+*.zip filter=lfs diff=lfs merge=lfs -text
+
+# 7-Zip
+*.7z filter=lfs diff=lfs merge=lfs -text
+
+# RAR
+*.rar filter=lfs diff=lfs merge=lfs -text

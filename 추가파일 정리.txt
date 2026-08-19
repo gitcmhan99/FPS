@@ -1,0 +1,8 @@
+.gitignore
+    Git에 올리지 않을 파일
+
+.gitattributes
+    Git LFS로 관리할 파일
+
+.editorconfig
+    코드 및 텍스트 파일 작성 규칙
