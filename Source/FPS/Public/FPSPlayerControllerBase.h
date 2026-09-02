@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,5 +13,18 @@ UCLASS()
 class FPS_API AFPSPlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+public:
+    AFPSPlayerControllerBase();
+
+public:
+    virtual void PostInitializeComponents() override;
+    virtual void PlayerTick(float DeltaTime) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+protected:
+    virtual void OnPossess(APawn* aPawn) override;
+    virtual void OnUnPossess() override;
+    virtual void BeginPlay() override;
+    
 };
