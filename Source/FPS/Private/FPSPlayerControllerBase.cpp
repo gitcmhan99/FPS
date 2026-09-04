@@ -25,18 +25,9 @@ void AFPSPlayerControllerBase::PostInitializeComponents()
 
 void AFPSPlayerControllerBase::PlayerTick(float DeltaTime)
 {
-    static bool doOnce = false;
+    Super::PlayerTick(DeltaTime);
 
-    if (false == doOnce)
-    {
-        MYLOG("Start AFPSPlayerControllerBase PlayerTick()");
 
-        Super::PlayerTick(DeltaTime);
-
-        MYLOG("End AFPSPlayerControllerBase PlayerTick()");
-
-        doOnce = true;
-    }
 }
 
 void AFPSPlayerControllerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -74,4 +65,16 @@ void AFPSPlayerControllerBase::BeginPlay()
 
     MYLOG("End AFPSPlayerControllerBase BeginPlay()");
 
+}
+
+void AFPSPlayerControllerBase::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+  //  InputComponent->BindAxis(TEXT("LeftRight"), this, &ThisClass::LeftRight);
+}
+
+void AFPSPlayerControllerBase::LeftRight(float InAxis)
+{
+    MYSCREENLOG(" AFPSPlayerControllerBase  LeftRight %f", InAxis);
 }

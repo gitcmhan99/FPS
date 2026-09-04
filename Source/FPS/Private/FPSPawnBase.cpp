@@ -18,12 +18,25 @@ AFPSPawnBase::AFPSPawnBase()
 	PrimaryActorTick.bCanEverTick = true;
 
     CapsuleComponent = GameUtil::CreateRootComponent<UCapsuleComponent>(this);
+    CapsuleComponent->SetCapsuleHalfHeight(90.0f);
+    CapsuleComponent->SetCapsuleRadius(40.0f);
+    CapsuleComponent->SetLineThickness(5.0f);
+
     SkeletalMeshComponent = GameUtil::CreateComponent<USkeletalMeshComponent>(
         this,
         true,
         CapsuleComponent);
+
+    FVector NewLocation(0.f, 0.f, -80.0f);
+    FRotator NewRotation(0.f, -90.0f, 0.f);
+    SkeletalMeshComponent->SetRelativeLocationAndRotation(NewLocation, NewRotation);
+
     SpringArmComponent =
         GameUtil::CreateComponent<USpringArmComponent>(this, true, CapsuleComponent);
+
+    SpringArmComponent->TargetArmLength = 400.0f;
+    SpringArmComponent->SetRelativeRotation(FRotator(-15.0f, 0.f, 0.f));
+
     CameraComponent = GameUtil::CreateComponent<UCameraComponent>(this, true, SpringArmComponent);
 
     FloatingPawnMovement = GameUtil::CreateActorComponent<UFloatingPawnMovement>(this);
@@ -38,25 +51,24 @@ void AFPSPawnBase::BeginPlay()
 
 	Super::BeginPlay();
 
-    MYLOG("End AFPSPawnBase::BeginPlay()");
+    APlayerController* playerController = Cast<APlayerController>(GetController());
 
+    if (playerController)
+    {
+        //FInputModeGameAndUI   InputModeGameAndUI;
+        //FInputModeUIOnly      InputModeUIOnly;
+
+        FInputModeGameOnly InputModeGameOnly;
+        playerController -> SetInputMode(InputModeGameOnly);
+    }
+
+    MYLOG("End AFPSPawnBase::BeginPlay()");
 }
 
 // Called every frame
 void AFPSPawnBase::Tick(float DeltaTime)
 {
-    static bool doOnce = false;
-
-    if (false == doOnce)
-    {
-        MYLOG("Start AFPSPawnBase::Tick()");
-
-        Super::Tick(DeltaTime);
-
-        MYLOG("End AFPSPawnBase::Tick()");
-
-        doOnce = true;
-    }
+    Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -66,7 +78,8 @@ void AFPSPawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    MYLOG("End AFPSPawnBase::SetupPlayerInputComponent()");
+    PlayerInputComponent->BindAxis(TEXT("UPDown"), this, &ThisClass::UpDown);
+    PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ThisClass::LeftRight);
 }
 
 void AFPSPawnBase::PostInitializeComponents()
@@ -103,5 +116,17 @@ void AFPSPawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 
     MYLOG("End AFPSPawnBase::EndPlay() EndPlayReason: %d", EndPlayReason);
+}
+
+void AFPSPawnBase::UpDown(float InAxisValue)
+{
+    MYSCREENLOG("InAxisValue: %f", InAxisValue);
+    AddMovementInput(GetActorForwardVector(), InAxisValue);
+}
+
+void AFPSPawnBase::LeftRight(float InAxisValue)
+{
+    MYSCREENLOG("LeftRight: %f", InAxisValue);
+    AddMovementInput(GetActorRightVector(), InAxisValue);
 }
 

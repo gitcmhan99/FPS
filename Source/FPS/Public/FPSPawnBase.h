@@ -60,4 +60,8 @@ protected:
 
     UPROPERTY(Category = "FPSPawn", EditDefaultsOnly)
     TObjectPtr<UCameraComponent> CameraComponent;
+
+private:
+    void UpDown(float InAxisValue);
+    void LeftRight(float InAxisValue);
 };
