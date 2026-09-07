@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameUtil.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 AFPSPawnBase::AFPSPawnBase()
@@ -62,6 +64,32 @@ void AFPSPawnBase::BeginPlay()
         playerController -> SetInputMode(InputModeGameOnly);
     }
 
+    {
+        APlayerController* PlayerController = Cast<APlayerController>(GetController());
+
+        if (PlayerController == nullptr)
+        {
+            return;
+        }
+
+        ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+
+        if (LocalPlayer == nullptr)
+        {
+            return;
+        }
+
+        UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+            LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+
+        if (InputSubsystem == nullptr)
+        {
+            return;
+        }
+
+        InputSubsystem->AddMappingContext(IMC_Player, 0);
+    }
+
     MYLOG("End AFPSPawnBase::BeginPlay()");
 }
 
@@ -78,8 +106,22 @@ void AFPSPawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    PlayerInputComponent->BindAxis(TEXT("UPDown"), this, &ThisClass::UpDown);
-    PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ThisClass::LeftRight);
+    //PlayerInputComponent->BindAxis(TEXT("UPDown"), this, &ThisClass::UpDown);
+    //PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ThisClass::LeftRight);
+
+    UEnhancedInputComponent* EnhancedInputComponent =
+        Cast<UEnhancedInputComponent>(PlayerInputComponent);
+
+    if (EnhancedInputComponent == nullptr)
+    {
+        return;
+    }
+
+    EnhancedInputComponent->BindAction(
+        IA_Move,
+        ETriggerEvent::Triggered,
+        this,
+        &AFPSPawnBase::OnMove);
 }
 
 void AFPSPawnBase::PostInitializeComponents()
@@ -118,11 +160,18 @@ void AFPSPawnBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     MYLOG("End AFPSPawnBase::EndPlay() EndPlayReason: %d", EndPlayReason);
 }
 
+void AFPSPawnBase::OnMove(const FInputActionValue& InputValue)
+{
+    FVector2D MoveValue = InputValue.Get<FVector2D>();
+
+    MYSCREENLOG("Move X: %f, Y: %f", MoveValue.X, MoveValue.Y);
+}
+
 void AFPSPawnBase::UpDown(float InAxisValue)
 {
     MYSCREENLOG("InAxisValue: %f", InAxisValue);
     AddMovementInput(GetActorForwardVector(), InAxisValue);
-}
+} 
 
 void AFPSPawnBase::LeftRight(float InAxisValue)
 {

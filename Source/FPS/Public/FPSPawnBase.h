@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "InputActionValue.h"
 #include "FPSPawnBase.generated.h"
 
 /*
@@ -18,6 +19,8 @@ class USkeletalMeshComponent;
 class UFloatingPawnMovement;
 class USpringArmComponent;
 class UCameraComponent;
+class UInputAction;
+class UInputMappingContext;
 
 UCLASS()
 class FPS_API AFPSPawnBase : public APawn
@@ -44,6 +47,7 @@ public:
     virtual void PossessedBy(AController* NewController) override;
     virtual void UnPossessed() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    void OnMove(const FInputActionValue& InputValue);
 
 protected:
     UPROPERTY(Category = "FPSPawn", EditDefaultsOnly)
@@ -60,6 +64,13 @@ protected:
 
     UPROPERTY(Category = "FPSPawn", EditDefaultsOnly)
     TObjectPtr<UCameraComponent> CameraComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputAction> IA_Move;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputMappingContext> IMC_Player;
+    
 
 private:
     void UpDown(float InAxisValue);
