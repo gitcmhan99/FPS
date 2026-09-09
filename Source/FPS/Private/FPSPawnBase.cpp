@@ -73,15 +73,12 @@ void AFPSPawnBase::BeginPlay()
         }
 
         ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-
         if (LocalPlayer == nullptr)
         {
             return;
         }
 
-        UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
-            LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-
+        UEnhancedInputLocalPlayerSubsystem* InputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
         if (InputSubsystem == nullptr)
         {
             return;
@@ -109,9 +106,7 @@ void AFPSPawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
     //PlayerInputComponent->BindAxis(TEXT("UPDown"), this, &ThisClass::UpDown);
     //PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ThisClass::LeftRight);
 
-    UEnhancedInputComponent* EnhancedInputComponent =
-        Cast<UEnhancedInputComponent>(PlayerInputComponent);
-
+    UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
     if (EnhancedInputComponent == nullptr)
     {
         return;
