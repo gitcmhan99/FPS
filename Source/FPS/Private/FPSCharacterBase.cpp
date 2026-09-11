@@ -42,32 +42,13 @@ void AFPSCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-    APlayerController* PlayerController = Cast<APlayerController>(GetController());
-    if (PlayerController == nullptr)
-    {
-        return;
-    }
-
-    ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-    if (LocalPlayer == nullptr)
-    {
-        return;
-    }
-
-    UEnhancedInputLocalPlayerSubsystem* InputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-    if (InputSubsystem == nullptr)
-    {
-        return;
-    }
-
-    InputSubsystem->AddMappingContext(IMC_Player, 0);
+    GameUtil::AddInputMapping(this, IMC_Player);
 }
 
 // Called every frame
 void AFPSCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -93,7 +74,7 @@ void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
     FVector2D MoveValue = InputValue.Get<FVector2D>();
 
     AddMovementInput(GetActorForwardVector(), MoveValue.X);
-    AddMovementInput(GetActorRightVector(), MoveValue.X);
+    AddMovementInput(GetActorRightVector(), MoveValue.Y);
 
     MYSCREENLOG("Move X: %f, Y: %f", MoveValue.X, MoveValue.Y);
 }

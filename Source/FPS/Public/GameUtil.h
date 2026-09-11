@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 namespace GameUtil
 {
@@ -111,5 +113,38 @@ namespace GameUtil
         }
 
         return MakeUniqueObjectName(Owner, T::StaticClass(), T::StaticClass()->GetFName());
+    }
+
+    static void AddInputMapping(const APawn* Pawn, const UInputMappingContext* MappingContext, int32 Priority = 0)
+    {
+        if (!ensureMsgf(Pawn, TEXT("AddInputMapping Pawn Null")))
+        {
+            return;
+        }
+
+        if (!ensureMsgf(MappingContext, TEXT("AddInputMapping MappingContext Null")))
+        {
+            return;
+        }
+
+        APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
+        if (!ensure(IsValid(PlayerController)))
+        {
+            return;
+        }
+
+        ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+        if (!ensure(IsValid(LocalPlayer)))
+        {
+            return;
+        }
+
+        UEnhancedInputLocalPlayerSubsystem* InputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+        if (!ensure(IsValid(InputSubsystem)))
+        {
+            return;
+        }
+
+        InputSubsystem->AddMappingContext(MappingContext, Priority);
     }
 }
