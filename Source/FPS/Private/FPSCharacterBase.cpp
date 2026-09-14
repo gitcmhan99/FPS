@@ -17,7 +17,6 @@
 AFPSCharacterBase::AFPSCharacterBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 
     GetCharacterMovement()->MaxWalkSpeed = 300.f;
     GetCharacterMovement()->MinAnalogWalkSpeed = 25.f;
@@ -35,6 +34,12 @@ AFPSCharacterBase::AFPSCharacterBase()
     SpringArmComponent->TargetArmLength = 400.f;
 
     CameraComponent = GameUtil::CreateComponent<UCameraComponent>(this, true, SpringArmComponent);
+
+#if WITH_EDITOR
+    PrimaryActorTick.bCanEverTick = true;
+#else
+    PrimaryActorTick.bCanEverTick = false;
+#endif
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +54,26 @@ void AFPSCharacterBase::BeginPlay()
 void AFPSCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+#if WITH_EDITOR
+    FVector LineStart = GetActorLocation() - GetActorForwardVector() * 50.f;
+    FVector LineEnd = LineStart + GetControlRotation().Vector() * 500.f;
+    FColor Color = FColor::Blue;
+    bool bPersistentLines = false;
+    float LifeTime = 0;
+    uint8 DepthPriority = 0;
+    float Thickness = 10.f;
+
+    DrawDebugLine(GetWorld(),
+        LineStart,
+        LineEnd,
+        Color,
+        bPersistentLines,
+        LifeTime,
+        DepthPriority,
+        Thickness
+    );
+#endif
 }
 
 // Called to bind functionality to input
@@ -62,11 +87,23 @@ void AFPSCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
         return;
     }
 
-    EnhancedInputComponent->BindAction(
-        InputActions->Move,
-        ETriggerEvent::Triggered,
-        this,
-        &AFPSCharacterBase::OnMove);
+    if (InputActions && InputActions->Move)
+    {
+        EnhancedInputComponent->BindAction(
+            InputActions->Move,
+            ETriggerEvent::Triggered,
+            this,
+            &AFPSCharacterBase::OnMove);
+    }
+
+    if (InputActions && InputActions->Look)
+    {
+        EnhancedInputComponent->BindAction(
+            InputActions->Look,
+            ETriggerEvent::Triggered,
+            this,
+            &AFPSCharacterBase::OnLook);
+    }
 }
 
 void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
@@ -79,3 +116,15 @@ void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
     MYSCREENLOG("Move X: %f, Y: %f", MoveValue.X, MoveValue.Y);
 }
 
+void AFPSCharacterBase::OnLook(const FInputActionValue& InputValue)
+{
+    if (IsValid(GetController()) == true)
+    {
+        FVector2D LookValue = InputValue.Get<FVector2D>();
+
+        AddControllerYawInput(LookValue.X);
+        AddControllerPitchInput(LookValue.Y);
+
+        MYSCREENLOG("OnLook: %f, LookY: %f", LookValue.X, LookValue.Y);
+    }
+}

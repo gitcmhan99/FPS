@@ -49,5 +49,7 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     TObjectPtr<UInputMappingContext> IMC_Player;
+
+    void OnLook(const FInputActionValue& InputValue);
 #pragma endregion
 };
