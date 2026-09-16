@@ -110,21 +110,114 @@ void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
 {
     FVector2D MoveValue = InputValue.Get<FVector2D>();
 
-    AddMovementInput(GetActorForwardVector(), MoveValue.X);
-    AddMovementInput(GetActorRightVector(), MoveValue.Y);
+    //AddMovementInput(GetActorForwardVector(), MoveValue.X);
+    //AddMovementInput(GetActorRightVector(), MoveValue.Y);
 
-    MYSCREENLOG("Move X: %f, Y: %f", MoveValue.X, MoveValue.Y);
+    //MYSCREENLOG("Move X: %f, Y: %f", MoveValue.X, MoveValue.Y);
+
+    switch (CurrentViewMode)
+    {
+        case EViewType::BACK_VIEW:
+        {
+            //컨트롤러가 바라보는 방향 가져오기
+            const FRotator ControlRotation = GetController()->GetControlRotation();
+            const FRotator ControlRotationYaw(0.f, ControlRotation.Yaw, 0.f);
+
+            //바라보는 방향 ForwardVector 만들기
+            const FVector ForwardVector = FRotationMatrix(ControlRotationYaw).GetUnitAxis(EAxis::X);
+            const FVector RightVector = FRotationMatrix(ControlRotationYaw).GetUnitAxis(EAxis::Y);
+
+            AddMovementInput(ForwardVector, MoveValue.X);
+            AddMovementInput(RightVector, MoveValue.Y);
+
+            break;
+        }
+        
+        case EViewType::QUARTER_VIEW:
+            break;
+        case EViewType::NONE:
+        default:
+        {
+            AddMovementInput(GetActorForwardVector(), MoveValue.X);
+            AddMovementInput(GetActorRightVector(), MoveValue.Y);
+            break;
+        }
+    }
 }
 
 void AFPSCharacterBase::OnLook(const FInputActionValue& InputValue)
 {
-    if (IsValid(GetController()) == true)
+    //if (IsValid(GetController()) == true)
+    //{
+    //    FVector2D LookValue = InputValue.Get<FVector2D>();
+
+    //    AddControllerYawInput(LookValue.X);
+    //    AddControllerPitchInput(LookValue.Y);
+
+    //    MYSCREENLOG("OnLook: %f, LookY: %f", LookValue.X, LookValue.Y);
+    //}
+
+    FVector2D LookValue = InputValue.Get<FVector2D>();
+
+    switch (CurrentViewMode)
     {
-        FVector2D LookValue = InputValue.Get<FVector2D>();
+        case EViewType::BACK_VIEW:
+        {
+            AddControllerYawInput(LookValue.X * LookOffSet);
+            AddControllerPitchInput(LookValue.Y * LookOffSet);
+            break;
+        }
+        case EViewType::QUARTER_VIEW:
+            break;
 
-        AddControllerYawInput(LookValue.X);
-        AddControllerPitchInput(LookValue.Y);
+        case EViewType::NONE:
+        default:
+        {
+            break;
+        }
+    }
+}
 
-        MYSCREENLOG("OnLook: %f, LookY: %f", LookValue.X, LookValue.Y);
+void AFPSCharacterBase::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+
+    SetViewMode(EViewType::BACK_VIEW);
+}
+
+void AFPSCharacterBase::SetViewMode(EViewType viewType)
+{
+    if (CurrentViewMode == viewType)
+    {
+        return;
+    }
+
+    CurrentViewMode = viewType;
+
+    switch (CurrentViewMode)
+    {
+    case EViewType::BACK_VIEW:
+    {
+        bUseControllerRotationPitch = false;
+        bUseControllerRotationYaw = true; //bUseControllerRotationYaw 
+        bUseControllerRotationRoll = false;
+
+        SpringArmComponent->TargetArmLength = 400.f;
+        SpringArmComponent->SetRelativeRotation(FRotator::ZeroRotator);
+
+        SpringArmComponent->bUsePawnControlRotation = true;
+
+        SpringArmComponent->bInheritPitch = true;
+        SpringArmComponent->bInheritYaw = true;
+        SpringArmComponent->bInheritRoll = false;
+
+        SpringArmComponent->bDoCollisionTest = true;
+
+        break;
+    }
+
+    case EViewType::NONE:
+    case EViewType::QUARTER_VIEW:
+        break;
     }
 }

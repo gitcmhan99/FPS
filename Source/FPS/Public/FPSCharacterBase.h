@@ -2,6 +2,14 @@
 
 #pragma once
 
+UENUM(BlueprintType)
+enum class EViewType : uint8
+{
+    NONE,
+    BACK_VIEW,
+    QUARTER_VIEW,
+};
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
@@ -34,6 +42,8 @@ public:
 
     void OnMove(const FInputActionValue& InputValue);
 
+    virtual void PossessedBy(AController* NewController) override;
+
 #pragma region [Component]
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess))
@@ -50,6 +60,18 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     TObjectPtr<UInputMappingContext> IMC_Player;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    float LookOffSet = 0.25f;
+
     void OnLook(const FInputActionValue& InputValue);
 #pragma endregion
+
+#pragma region ViewMode []
+public:
+    void SetViewMode(EViewType eviewtype);
+
+protected:
+    EViewType CurrentViewMode = EViewType::NONE;
+
+#pragma endregion ViewMode
 };
