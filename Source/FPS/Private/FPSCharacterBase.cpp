@@ -12,7 +12,6 @@
 #include "FPSInputActions.h"
 #include "FPS/FPS.h"
 
-
 // Sets default values
 AFPSCharacterBase::AFPSCharacterBase()
 {
@@ -54,6 +53,23 @@ void AFPSCharacterBase::BeginPlay()
 void AFPSCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+    switch (CurrentViewMode)
+    {
+    case EViewType::BACK_VIEW:
+        break;
+    case EViewType::QUARTER_VIEW:
+        if (KINDA_SMALL_NUMBER < DirectionToMove.SizeSquared())
+        {
+            //Forward 방향의 회전행렬
+            FRotator NewRotation = FRotationMatrix::MakeFromX(DirectionToMove).Rotator();
+            GetController()->SetControlRotation(NewRotation); //회전행렬만큼 회전
+
+            AddMovementInput(DirectionToMove);
+            DirectionToMove = FVector::ZeroVector;
+        }
+        break;
+    }
 
 #if WITH_EDITOR
     FVector LineStart = GetActorLocation() - GetActorForwardVector() * 50.f;
@@ -104,6 +120,15 @@ void AFPSCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
             this,
             &AFPSCharacterBase::OnLook);
     }
+
+    if (InputActions && InputActions->ViewChange)
+    {
+        EnhancedInputComponent->BindAction(
+            InputActions->ViewChange,
+            ETriggerEvent::Started,
+            this,
+            &AFPSCharacterBase::OnViewChange);
+    }
 }
 
 void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
@@ -134,7 +159,12 @@ void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
         }
         
         case EViewType::QUARTER_VIEW:
+        {
+            DirectionToMove.X = MoveValue.X;
+            DirectionToMove.Y = MoveValue.Y;
+
             break;
+        }
         case EViewType::NONE:
         default:
         {
@@ -178,11 +208,28 @@ void AFPSCharacterBase::OnLook(const FInputActionValue& InputValue)
     }
 }
 
+void AFPSCharacterBase::OnViewChange(const FInputActionValue& InputValue)
+{
+    switch (CurrentViewMode)
+    {
+    case EViewType::BACK_VIEW:
+        SetViewMode(EViewType::QUARTER_VIEW);
+        break;
+    case EViewType::QUARTER_VIEW:
+        SetViewMode(EViewType::BACK_VIEW);
+        break;
+    case EViewType::NONE:
+    default:
+        break;
+    }
+}
+
 void AFPSCharacterBase::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    SetViewMode(EViewType::BACK_VIEW);
+    //SetViewMode(EViewType::BACK_VIEW);
+    SetViewMode(EViewType::QUARTER_VIEW);
 }
 
 void AFPSCharacterBase::SetViewMode(EViewType viewType)
@@ -199,7 +246,7 @@ void AFPSCharacterBase::SetViewMode(EViewType viewType)
     case EViewType::BACK_VIEW:
     {
         bUseControllerRotationPitch = false;
-        bUseControllerRotationYaw = true; //bUseControllerRotationYaw 
+        bUseControllerRotationYaw = false; //bUseControllerRotationYaw = true; //bUseControllerRotationYaw 
         bUseControllerRotationRoll = false;
 
         SpringArmComponent->TargetArmLength = 400.f;
@@ -213,11 +260,40 @@ void AFPSCharacterBase::SetViewMode(EViewType viewType)
 
         SpringArmComponent->bDoCollisionTest = true;
 
+        GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f);
+        GetCharacterMovement()->bOrientRotationToMovement = true;
+        GetCharacterMovement()->bUseControllerDesiredRotation = false;
+
+        //bOrientRotationToMovement = true;
+        //bUseControllerRotationYaw = false;
+
+
         break;
     }
-
-    case EViewType::NONE:
     case EViewType::QUARTER_VIEW:
+    {
+        bUseControllerRotationPitch = false;
+        bUseControllerRotationYaw = false; //bUseControllerRotationYaw = true; 
+        bUseControllerRotationRoll = false;
+
+        SpringArmComponent->TargetArmLength = 800.f;
+        SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+
+        SpringArmComponent->bUsePawnControlRotation = false;
+
+        SpringArmComponent->bInheritPitch = false;
+        SpringArmComponent->bInheritYaw = false;
+        SpringArmComponent->bInheritRoll = false;
+
+        SpringArmComponent->bDoCollisionTest = false;
+
+        GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f);
+        GetCharacterMovement()->bOrientRotationToMovement = false;
+        GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+        break;
+    }
+    case EViewType::NONE:
         break;
     }
 }

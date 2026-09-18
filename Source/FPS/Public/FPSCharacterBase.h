@@ -64,9 +64,10 @@ protected:
     float LookOffSet = 0.25f;
 
     void OnLook(const FInputActionValue& InputValue);
+    void OnViewChange(const FInputActionValue& InputValue);
 #pragma endregion
 
-#pragma region ViewMode []
+#pragma region ViewMode
 public:
     void SetViewMode(EViewType eviewtype);
 
@@ -74,4 +75,7 @@ protected:
     EViewType CurrentViewMode = EViewType::NONE;
 
 #pragma endregion ViewMode
+
+protected:
+    FVector DirectionToMove = FVector::ZeroVector;
 };
