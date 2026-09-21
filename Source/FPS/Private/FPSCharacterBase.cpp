@@ -120,59 +120,27 @@ void AFPSCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
             this,
             &AFPSCharacterBase::OnLook);
     }
-
-    if (InputActions && InputActions->ViewChange)
-    {
-        EnhancedInputComponent->BindAction(
-            InputActions->ViewChange,
-            ETriggerEvent::Started,
-            this,
-            &AFPSCharacterBase::OnViewChange);
-    }
 }
 
 void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
 {
     FVector2D MoveValue = InputValue.Get<FVector2D>();
 
+    //컨트롤러가 바라보는 방향 가져오기
+    const FRotator ControlRotation = GetController()->GetControlRotation();
+    const FRotator ControlRotationYaw(0.f, ControlRotation.Yaw, 0.f);
+
+    //바라보는 방향 ForwardVector 만들기
+    const FVector ForwardVector = FRotationMatrix(ControlRotationYaw).GetUnitAxis(EAxis::X);
+    const FVector RightVector = FRotationMatrix(ControlRotationYaw).GetUnitAxis(EAxis::Y);
+
+    AddMovementInput(ForwardVector, MoveValue.X);
+    AddMovementInput(RightVector, MoveValue.Y);
+
     //AddMovementInput(GetActorForwardVector(), MoveValue.X);
     //AddMovementInput(GetActorRightVector(), MoveValue.Y);
 
     //MYSCREENLOG("Move X: %f, Y: %f", MoveValue.X, MoveValue.Y);
-
-    switch (CurrentViewMode)
-    {
-        case EViewType::BACK_VIEW:
-        {
-            //컨트롤러가 바라보는 방향 가져오기
-            const FRotator ControlRotation = GetController()->GetControlRotation();
-            const FRotator ControlRotationYaw(0.f, ControlRotation.Yaw, 0.f);
-
-            //바라보는 방향 ForwardVector 만들기
-            const FVector ForwardVector = FRotationMatrix(ControlRotationYaw).GetUnitAxis(EAxis::X);
-            const FVector RightVector = FRotationMatrix(ControlRotationYaw).GetUnitAxis(EAxis::Y);
-
-            AddMovementInput(ForwardVector, MoveValue.X);
-            AddMovementInput(RightVector, MoveValue.Y);
-
-            break;
-        }
-        
-        case EViewType::QUARTER_VIEW:
-        {
-            DirectionToMove.X = MoveValue.X;
-            DirectionToMove.Y = MoveValue.Y;
-
-            break;
-        }
-        case EViewType::NONE:
-        default:
-        {
-            AddMovementInput(GetActorForwardVector(), MoveValue.X);
-            AddMovementInput(GetActorRightVector(), MoveValue.Y);
-            break;
-        }
-    }
 }
 
 void AFPSCharacterBase::OnLook(const FInputActionValue& InputValue)
@@ -189,23 +157,8 @@ void AFPSCharacterBase::OnLook(const FInputActionValue& InputValue)
 
     FVector2D LookValue = InputValue.Get<FVector2D>();
 
-    switch (CurrentViewMode)
-    {
-        case EViewType::BACK_VIEW:
-        {
-            AddControllerYawInput(LookValue.X * LookOffSet);
-            AddControllerPitchInput(LookValue.Y * LookOffSet);
-            break;
-        }
-        case EViewType::QUARTER_VIEW:
-            break;
-
-        case EViewType::NONE:
-        default:
-        {
-            break;
-        }
-    }
+    AddControllerYawInput(LookValue.X * LookOffSet);
+    AddControllerPitchInput(LookValue.Y * LookOffSet);
 }
 
 void AFPSCharacterBase::OnViewChange(const FInputActionValue& InputValue)
