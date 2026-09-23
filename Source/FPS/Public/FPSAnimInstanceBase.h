@@ -36,4 +36,7 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     uint8 IsMove : 1;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    uint8 IsFalling : 1;
 };

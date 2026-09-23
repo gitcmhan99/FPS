@@ -25,4 +25,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TObjectPtr<UInputAction> ViewChange;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<UInputAction> Jump;
 };

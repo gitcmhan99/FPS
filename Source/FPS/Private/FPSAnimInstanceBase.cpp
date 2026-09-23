@@ -41,5 +41,7 @@ void UFPSAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
     bool IsNearlyZero = FMath::IsNearlyZero(fAcceleration);
 
     IsMove = (IsNearlyZero == false &&
-                   fVelocity > KINDA_SMALL_NUMBER);
+              fVelocity > KINDA_SMALL_NUMBER);
+
+    IsFalling = OwnerFPSCM->IsFalling();
 }

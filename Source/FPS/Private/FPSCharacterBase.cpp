@@ -120,6 +120,22 @@ void AFPSCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
             this,
             &AFPSCharacterBase::OnLook);
     }
+
+    if (InputActions && InputActions->Jump)
+    {
+        //부모 클래스인 ACharacter에 함수를 연결
+        EnhancedInputComponent->BindAction(
+            InputActions->Jump,
+            ETriggerEvent::Started,
+            this,
+            &ACharacter::Jump);
+
+        EnhancedInputComponent->BindAction(
+            InputActions->Jump,
+            ETriggerEvent::Completed,
+            this,
+            &ACharacter::StopJumping);
+    }
 }
 
 void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
