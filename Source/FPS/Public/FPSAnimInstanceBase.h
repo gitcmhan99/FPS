@@ -31,8 +31,14 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TObjectPtr<UCharacterMovementComponent> OwnerFPSCM;
 
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    //float fVelocity;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    float fVelocity;
+    FVector Velocity;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    float fSpeed;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     uint8 IsMove : 1;
