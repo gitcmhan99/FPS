@@ -22,6 +22,7 @@ void UFPSPickup::CallBackBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
     AFPSCharacterBase* castFPSChar = Cast<AFPSCharacterBase>(OtherActor);
     if (IsValid(castFPSChar))
     {
+        OnPickUp.Broadcast(castFPSChar);
         OnComponentBeginOverlap.RemoveAll(this);
     }
 }

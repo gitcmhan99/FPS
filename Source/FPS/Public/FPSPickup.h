@@ -8,6 +8,8 @@
 
 class AFPSCharacterBase;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickUp, AFPSCharacterBase*, pickupChar);
+
 /**
  * 
  */
@@ -28,4 +30,8 @@ protected:
     void CallBackBeginOverlap(UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor, UPrimitiveComponent* OtherComp,
         int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+public:
+    UPROPERTY(BlueprintAssignable)
+    FOnPickUp OnPickUp;
 };
