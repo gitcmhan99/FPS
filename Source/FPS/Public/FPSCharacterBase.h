@@ -65,6 +65,18 @@ protected:
 
     void OnLook(const FInputActionValue& InputValue);
     void OnViewChange(const FInputActionValue& InputValue);
+
+    void InputMelee(const FInputActionValue& InputValue);
+
+#pragma endregion
+
+#pragma region [Melee]
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage")
+    TObjectPtr<UAnimMontage> MeleeMontage;
+
+public:
+    UFUNCTION()
+    void Callback_CheckAttack();
 #pragma endregion
 
 #pragma region ViewMode

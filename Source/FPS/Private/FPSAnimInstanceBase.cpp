@@ -5,6 +5,7 @@
 #include "FPSCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "FPS/FPS.h"
 
 void UFPSAnimInstanceBase::NativeInitializeAnimation()
 {
@@ -44,4 +45,15 @@ void UFPSAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
               fSpeed > KINDA_SMALL_NUMBER);
 
     IsFalling = OwnerFPSCM->IsFalling();
+}
+
+void UFPSAnimInstanceBase::AnimNotify_CheckAttack()
+{
+    MYSCREENLOG("AnimNotify_CheckAttack()");
+
+    //델리게이트 함수 또는 특정 함수를 호출
+    if (OnCheckAttack.IsBound())
+    {
+        OnCheckAttack.Broadcast();
+    }
 }

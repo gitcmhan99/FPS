@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "FPSInputActions.h"
 #include "FPS/FPS.h"
+#include "FPSAnimInstanceBase.h"
 
 // Sets default values
 AFPSCharacterBase::AFPSCharacterBase()
@@ -47,6 +48,18 @@ void AFPSCharacterBase::BeginPlay()
 	Super::BeginPlay();
 
     GameUtil::AddInputMapping(this, IMC_Player);
+
+    { //AM 노티파이 함수 바인딩.
+        UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
+
+        if (IsValid(AnimInstance) == false ||
+            IsValid(MeleeMontage) == false )
+        {
+            return;
+        }
+
+        AnimInstance->OnCheckAttack.AddDynamic(this, &ThisClass::Callback_CheckAttack);
+    }
 }
 
 // Called every frame
@@ -136,6 +149,16 @@ void AFPSCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
             this,
             &ACharacter::StopJumping);
     }
+
+    if (InputActions && InputActions->Melee)
+    {
+        //부모 클래스인 ACharacter에 함수를 연결
+        EnhancedInputComponent->BindAction(
+            InputActions->Melee,
+            ETriggerEvent::Started,
+            this,
+            &ThisClass::InputMelee);
+    }
 }
 
 void AFPSCharacterBase::OnMove(const FInputActionValue& InputValue)
@@ -193,12 +216,40 @@ void AFPSCharacterBase::OnViewChange(const FInputActionValue& InputValue)
     }
 }
 
+void AFPSCharacterBase::InputMelee(const FInputActionValue& InputValue)
+{
+    MYSCREENLOG("AFPSCharacterBase::InputMelee");
+
+    if (GetCharacterMovement()->IsFalling() == true)
+    {
+        return;
+    }
+
+    UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
+
+    if (IsValid(AnimInstance) == false ||
+        IsValid(MeleeMontage) == false ||
+        AnimInstance->Montage_IsPlaying(MeleeMontage))
+    {
+        return;
+    }
+
+    AnimInstance->Montage_Play(MeleeMontage);
+}
+
 void AFPSCharacterBase::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
     //SetViewMode(EViewType::BACK_VIEW);
     SetViewMode(EViewType::QUARTER_VIEW);
+}
+
+void AFPSCharacterBase::Callback_CheckAttack()
+{
+    MYSCREENLOG("AFPSCharacterBase::Callback_CheckAttack()");
+
+
 }
 
 void AFPSCharacterBase::SetViewMode(EViewType viewType)

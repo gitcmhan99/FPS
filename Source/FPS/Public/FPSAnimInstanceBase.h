@@ -9,6 +9,8 @@
 class AFPSCharacterBase;
 class UCharacterMovementComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckAttack);
+
 /**
  * 
  */
@@ -45,4 +47,10 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     uint8 IsFalling : 1;
+
+    UFUNCTION()
+    void AnimNotify_CheckAttack();
+
+public:
+    FOnCheckAttack OnCheckAttack;
 };

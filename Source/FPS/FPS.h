@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -27,7 +27,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogFPS, Warning, All);
    	if (GEngine != nullptr) \
 	{ \
 		FString msg = FString::Printf(TEXT(format), ##__VA_ARGS__); \
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, msg); \
+		GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Blue, msg); \
 	} \
 }
 
