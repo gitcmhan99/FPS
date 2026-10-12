@@ -225,16 +225,33 @@ void AFPSCharacterBase::InputMelee(const FInputActionValue& InputValue)
         return;
     }
 
-    UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
+    //UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
 
-    if (IsValid(AnimInstance) == false ||
-        IsValid(MeleeMontage) == false ||
-        AnimInstance->Montage_IsPlaying(MeleeMontage))
+    //if (IsValid(AnimInstance) == false ||
+    //    IsValid(MeleeMontage) == false ||
+    //    AnimInstance->Montage_IsPlaying(MeleeMontage))
+    //{
+    //    return;
+    //}
+
+    //AnimInstance->Montage_Play(MeleeMontage);
+
+    if (CurrentComboCount == 0)
     {
-        return;
+        BeginAttack();
     }
+    else
+    {
+        bool IsWithinInclusive = FMath::IsWithinInclusive<int32>(CurrentComboCount, 1, MaxComboCount);
 
-    AnimInstance->Montage_Play(MeleeMontage);
+        if (IsWithinInclusive == false)
+        { //1 < CurrentComboCount < MaxComboCount 사이에 값이 아님
+            return;
+        }
+
+        //IsPressAttack
+        IsPressAttack = true;
+    }
 }
 
 void AFPSCharacterBase::PossessedBy(AController* NewController)
@@ -245,11 +262,69 @@ void AFPSCharacterBase::PossessedBy(AController* NewController)
     SetViewMode(EViewType::QUARTER_VIEW);
 }
 
+void AFPSCharacterBase::BeginAttack()
+{
+    MYSCREENLOG("AFPSCharacterBase::BeginAttack");
+
+    UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
+
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
+    if (IsValid(AnimInstance) == false ||
+        IsValid(MeleeMontage) == false ||
+        AnimInstance->Montage_IsPlaying(MeleeMontage))
+    {
+        return;
+    }
+
+    AnimInstance->Montage_Play(MeleeMontage);
+
+    CurrentComboCount = 1;
+
+    if (OnMontageEnded.IsBound() == false)
+    {
+        OnMontageEnded.BindUObject(this, &ThisClass::EndAttack);
+        AnimInstance->Montage_SetEndDelegate(OnMontageEnded);
+    }
+}
+
+void AFPSCharacterBase::EndAttack(UAnimMontage* ptrAnimMontage, bool isEnd)
+{
+    MYSCREENLOG("AFPSCharacterBase::EndAttack");
+
+    CurrentComboCount = 0;
+    IsPressAttack = false;
+
+    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+    if (OnMontageEnded.IsBound() == true)
+    {
+        OnMontageEnded.Unbind();
+    }
+}
+
 void AFPSCharacterBase::Callback_CheckAttack()
 {
-    MYSCREENLOG("AFPSCharacterBase::Callback_CheckAttack()");
+
+    MYSCREENLOG(" UAnimNotify AFPSCharacterBase::Callback_CheckAttack()");
 
 
+}
+
+void AFPSCharacterBase::Callback_CheckInput()
+{
+    UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
+
+    if (IsPressAttack == true)
+    {
+        CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 1, MaxComboCount);
+
+        //"Attack01", "Attack02", "Attack03"
+        FName SectionName = *FString::Printf(TEXT("%s%02d"), TEXT("Attack"), CurrentComboCount);
+        AnimInstance->Montage_JumpToSection(SectionName, MeleeMontage);
+
+        IsPressAttack = false;
+    }
 }
 
 void AFPSCharacterBase::SetViewMode(EViewType viewType)

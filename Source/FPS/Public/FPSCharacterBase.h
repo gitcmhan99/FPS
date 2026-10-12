@@ -74,9 +74,24 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montage")
     TObjectPtr<UAnimMontage> MeleeMontage;
 
+protected:
+    int32 CurrentComboCount = 0;
+    int32 MaxComboCount = 3;
+    bool IsPressAttack = false;
+
+    FOnMontageEnded OnMontageEnded;
+
 public:
+    void BeginAttack();
+
+    UFUNCTION()
+    void EndAttack(UAnimMontage* ptrAnimMontage, bool isEnd);
+
     UFUNCTION()
     void Callback_CheckAttack();
+
+    UFUNCTION()
+    void Callback_CheckInput();
 #pragma endregion
 
 #pragma region ViewMode
