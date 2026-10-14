@@ -268,7 +268,7 @@ void AFPSCharacterBase::BeginAttack()
 
     UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
 
-    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+    //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
     if (IsValid(AnimInstance) == false ||
         IsValid(MeleeMontage) == false ||
@@ -295,7 +295,7 @@ void AFPSCharacterBase::EndAttack(UAnimMontage* ptrAnimMontage, bool isEnd)
     CurrentComboCount = 0;
     IsPressAttack = false;
 
-    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+    //GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
     if (OnMontageEnded.IsBound() == true)
     {
