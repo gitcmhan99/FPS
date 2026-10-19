@@ -40,6 +40,9 @@ AFPSCharacterBase::AFPSCharacterBase()
 #else
     PrimaryActorTick.bCanEverTick = false;
 #endif
+
+    //Collision Preset( Collision 프로파일 ) "FPSChannel"로 지정
+    GetMesh()->SetCollisionProfileName(TEXT("FPSChannel"));
 }
 
 // Called when the game starts or when spawned
@@ -305,10 +308,39 @@ void AFPSCharacterBase::EndAttack(UAnimMontage* ptrAnimMontage, bool isEnd)
 
 void AFPSCharacterBase::Callback_CheckAttack()
 {
+    TArray<FHitResult> OutHits;
 
     MYSCREENLOG(" UAnimNotify AFPSCharacterBase::Callback_CheckAttack()");
 
+    FVector Start = GetActorLocation();
+    FVector End = GetActorLocation() + (AttackRange * GetActorForwardVector());
+    FQuat Rot = FQuat::Identity;
+    ECollisionChannel TraceChannel = ECC_ATTACK;
+    FCollisionShape CollisionShape = FCollisionShape::MakeSphere(AttackRadius);
+    FCollisionQueryParams RParam(NAME_None, false, this);
 
+    bool isSweepMulti = GetWorld()->SweepMultiByChannel(
+        OutHits,
+        Start,
+        End,
+        Rot,
+        TraceChannel,
+        CollisionShape,
+        RParam
+    );
+
+    DrawDebugAttackRange(isSweepMulti);
+
+    if (OutHits.IsEmpty() == false)
+    {
+        for (FHitResult result : OutHits)
+        {
+            if (IsValid(result.GetActor()))
+            {
+                MYSCREENLOG("Callback_CheckAttack Name: %s", *result.GetActor()->GetName());
+            }
+        }
+    }
 }
 
 void AFPSCharacterBase::Callback_CheckInput()
@@ -317,6 +349,8 @@ void AFPSCharacterBase::Callback_CheckInput()
 
     if (IsPressAttack == true)
     {
+        
+
         CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 1, MaxComboCount);
 
         //"Attack01", "Attack02", "Attack03"
@@ -391,4 +425,48 @@ void AFPSCharacterBase::SetViewMode(EViewType viewType)
     case EViewType::NONE:
         break;
     }
+}
+
+void AFPSCharacterBase::DrawDebugAttackRange(bool bHit)
+{
+    const FVector Start = GetActorLocation();
+
+    const FVector End =
+        GetActorLocation() + AttackRange * GetActorForwardVector();
+
+    const float DebugTime = 1.0f;
+
+    // 시작점
+    DrawDebugSphere(
+        GetWorld(),
+        Start,
+        AttackRadius,
+        16,
+        FColor::Green,
+        false,
+        DebugTime
+    );
+
+    // 끝점
+    DrawDebugSphere(
+        GetWorld(),
+        End,
+        AttackRadius,
+        16,
+        FColor::Red,
+        false,
+        DebugTime
+    );
+
+    // 스윕 방향
+    DrawDebugLine(
+        GetWorld(),
+        Start,
+        End,
+        bHit ? FColor::Red : FColor::Blue,
+        false,
+        DebugTime,
+        0,
+        2.0f
+    );
 }

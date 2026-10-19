@@ -6,6 +6,9 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogFPS, Warning, All);
 
+#define ECC_FPSCHANNEL ECollisionChannel::ECC_GameTraceChannel1
+#define ECC_ATTACK ECollisionChannel::ECC_GameTraceChannel2
+
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once

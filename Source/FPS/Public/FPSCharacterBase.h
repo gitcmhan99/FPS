@@ -105,4 +105,11 @@ protected:
 
 protected:
     FVector DirectionToMove = FVector::ZeroVector;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float AttackRange = 50.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float AttackRadius = 20.0f;
+
+    void DrawDebugAttackRange(bool bHit);
 };
