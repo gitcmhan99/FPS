@@ -45,6 +45,8 @@ void UFPSAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
               fSpeed > KINDA_SMALL_NUMBER);
 
     IsFalling = OwnerFPSCM->IsFalling();
+
+    IsDead = OwnerFPSCharacter->GetIsDead();
 }
 
 void UFPSAnimInstanceBase::AnimNotify_CheckAttack()
@@ -55,5 +57,15 @@ void UFPSAnimInstanceBase::AnimNotify_CheckAttack()
     if (OnCheckAttack.IsBound())
     {
         OnCheckAttack.Broadcast();
+    }
+}
+
+void UFPSAnimInstanceBase::AnimNotify_CheckDead()
+{
+    MYSCREENLOG("AnimNotify_CheckDead()");
+
+    if (OnCheckDead.IsBound())
+    {
+        OnCheckDead.Broadcast();
     }
 }

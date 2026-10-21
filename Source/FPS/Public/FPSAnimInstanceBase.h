@@ -10,6 +10,7 @@ class AFPSCharacterBase;
 class UCharacterMovementComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckAttack);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckDead);
 
 /**
  * 
@@ -48,9 +49,15 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     uint8 IsFalling : 1;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    uint8 IsDead : 1;
+
     UFUNCTION()
     void AnimNotify_CheckAttack();
+    UFUNCTION()
+    void AnimNotify_CheckDead();
 
 public:
     FOnCheckAttack OnCheckAttack;
+    FOnCheckDead OnCheckDead;
 };

@@ -12,6 +12,7 @@
 #include "FPSInputActions.h"
 #include "FPS/FPS.h"
 #include "FPSAnimInstanceBase.h"
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AFPSCharacterBase::AFPSCharacterBase()
@@ -43,6 +44,8 @@ AFPSCharacterBase::AFPSCharacterBase()
 
     //Collision Preset( Collision 프로파일 ) "FPSChannel"로 지정
     GetMesh()->SetCollisionProfileName(TEXT("FPSChannel"));
+
+    IsDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +65,18 @@ void AFPSCharacterBase::BeginPlay()
         }
 
         AnimInstance->OnCheckAttack.AddDynamic(this, &ThisClass::Callback_CheckAttack);
+    }
+
+    { //AM 노티파이 함수 바인딩.
+        UFPSAnimInstanceBase* AnimInstance = Cast<UFPSAnimInstanceBase>(GetMesh()->GetAnimInstance());
+
+        if (IsValid(AnimInstance) == false ||
+            IsValid(MeleeMontage) == false)
+        {
+            return;
+        }
+
+        AnimInstance->OnCheckDead.AddDynamic(this, &ThisClass::Callback_CheckDead);
     }
 }
 
@@ -338,6 +353,15 @@ void AFPSCharacterBase::Callback_CheckAttack()
             if (IsValid(result.GetActor()))
             {
                 MYSCREENLOG("Callback_CheckAttack Name: %s", *result.GetActor()->GetName());
+
+                //#include "Engine/DamageEvents.h"
+                FDamageEvent demageEvent;
+
+                float DamageAmount = 10.0f;
+                AController* EventInstigator = GetController();
+                AActor* DamageCauser = this;
+
+                result.GetActor()->TakeDamage(DamageAmount, demageEvent, EventInstigator, DamageCauser);
             }
         }
     }
@@ -349,8 +373,6 @@ void AFPSCharacterBase::Callback_CheckInput()
 
     if (IsPressAttack == true)
     {
-        
-
         CurrentComboCount = FMath::Clamp(CurrentComboCount + 1, 1, MaxComboCount);
 
         //"Attack01", "Attack02", "Attack03"
@@ -359,6 +381,11 @@ void AFPSCharacterBase::Callback_CheckInput()
 
         IsPressAttack = false;
     }
+}
+
+void AFPSCharacterBase::Callback_CheckDead()
+{
+    MYSCREENLOG("Callback_CheckDead");
 }
 
 void AFPSCharacterBase::SetViewMode(EViewType viewType)
@@ -470,3 +497,24 @@ void AFPSCharacterBase::DrawDebugAttackRange(bool bHit)
         2.0f
     );
 }
+
+float AFPSCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+     float damageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+     //TODO: 여기에 Damage 처리
+     CurrentHP = FMath::Clamp(CurrentHP - damageAmount, 0.f, MaxHP);
+     if (CurrentHP < KINDA_SMALL_NUMBER)
+     {
+         IsDead = true;
+         CurrentHP = 0.0f;
+         GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+         GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+     }
+
+     MYSCREENLOG("%s [%.1f / %.1f]", *GetName(), CurrentHP, MaxHP);
+
+     return damageAmount;
+}
+
+

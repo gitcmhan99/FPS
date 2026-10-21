@@ -92,6 +92,32 @@ public:
 
     UFUNCTION()
     void Callback_CheckInput();
+
+
+#pragma endregion
+
+#pragma region [ HP ]
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float MaxHP = 100.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float CurrentHP = 100.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    uint8 IsDead : 1;
+
+public:
+    float GetMaxHP() const { return MaxHP; }
+    float GetCurrentHP() const { return CurrentHP; }
+    float GetIsDead() const { return IsDead; }
+    void SetMaxHP(float value) { MaxHP = value; }
+    void SetCurrent(float value) { CurrentHP = value; }
+
+public:
+    UFUNCTION()
+    void Callback_CheckDead();
+
 #pragma endregion
 
 #pragma region ViewMode
@@ -102,6 +128,9 @@ protected:
     EViewType CurrentViewMode = EViewType::NONE;
 
 #pragma endregion ViewMode
+
+public:
+    float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 protected:
     FVector DirectionToMove = FVector::ZeroVector;
