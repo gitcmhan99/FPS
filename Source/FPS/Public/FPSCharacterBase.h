@@ -120,14 +120,14 @@ public:
 
 #pragma endregion
 
-#pragma region ViewMode
+#pragma region [ ViewMode ]
 public:
     void SetViewMode(EViewType eviewtype);
 
 protected:
     EViewType CurrentViewMode = EViewType::NONE;
 
-#pragma endregion ViewMode
+#pragma endregion 
 
 public:
     float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
@@ -141,4 +141,10 @@ protected:
     float AttackRadius = 20.0f;
 
     void DrawDebugAttackRange(bool bHit);
+
+
+
+public:
+    static int32 ShowMyDebug;
+
 };

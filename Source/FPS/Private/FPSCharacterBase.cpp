@@ -3,16 +3,26 @@
 
 #include "FPSCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameUtil.h"
+#include "FPS/FPS.h"
+
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameUtil.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "FPSInputActions.h"
-#include "FPS/FPS.h"
 #include "FPSAnimInstanceBase.h"
 #include "Engine/DamageEvents.h"
+
+int32 AFPSCharacterBase::ShowMyDebug = 0;
+
+FAutoConsoleVariableRef CVarShoeMyDebug(
+    TEXT("FPS.ShowMyDebug"),	       //콘솔에 입력할 명령어
+    AFPSCharacterBase::ShowMyDebug,  //변경되는 변수
+    TEXT("Console OnOff ShowMyDebug"), //설명
+    ECVF_Cheat                        //치트 권할 설정
+);
 
 // Sets default values
 AFPSCharacterBase::AFPSCharacterBase()
@@ -103,23 +113,26 @@ void AFPSCharacterBase::Tick(float DeltaTime)
     }
 
 #if WITH_EDITOR
-    FVector LineStart = GetActorLocation() - GetActorForwardVector() * 50.f;
-    FVector LineEnd = LineStart + GetControlRotation().Vector() * 500.f;
-    FColor Color = FColor::Blue;
-    bool bPersistentLines = false;
-    float LifeTime = 0;
-    uint8 DepthPriority = 0;
-    float Thickness = 10.f;
+    if (1 == ShowMyDebug)
+    {
+        FVector LineStart = GetActorLocation() - GetActorForwardVector() * 50.f;
+        FVector LineEnd = LineStart + GetControlRotation().Vector() * 500.f;
+        FColor Color = FColor::Blue;
+        bool bPersistentLines = false;
+        float LifeTime = 0;
+        uint8 DepthPriority = 0;
+        float Thickness = 10.f;
 
-    DrawDebugLine(GetWorld(),
-        LineStart,
-        LineEnd,
-        Color,
-        bPersistentLines,
-        LifeTime,
-        DepthPriority,
-        Thickness
-    );
+        DrawDebugLine(GetWorld(),
+            LineStart,
+            LineEnd,
+            Color,
+            bPersistentLines,
+            LifeTime,
+            DepthPriority,
+            Thickness
+        );
+    }
 #endif
 }
 
@@ -386,6 +399,8 @@ void AFPSCharacterBase::Callback_CheckInput()
 void AFPSCharacterBase::Callback_CheckDead()
 {
     MYSCREENLOG("Callback_CheckDead");
+
+    SetLifeSpan(0.1f);
 }
 
 void AFPSCharacterBase::SetViewMode(EViewType viewType)

@@ -127,6 +127,11 @@ namespace GameUtil
             return;
         }
 
+        if (!IsValid(Pawn))
+        {
+            return;
+        }
+
         APlayerController* PlayerController = Cast<APlayerController>(Pawn->GetController());
         if (!ensure(IsValid(PlayerController)))
         {
