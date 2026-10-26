@@ -10,7 +10,8 @@ public class FPS : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject",
             "Engine", "InputCore", "EnhancedInput",
-            "AIModule" //AI
+            "AIModule", //AI
+            "NavigationSystem",
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
