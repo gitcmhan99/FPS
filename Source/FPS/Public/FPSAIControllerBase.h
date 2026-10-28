@@ -21,13 +21,26 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
-protected:
-    FTimerHandle TimerHandle_Patrol;
+//protected:
+//    FTimerHandle TimerHandle_Patrol;
+//
+//private:
+//    void OnPatrol();
 
-private:
-    void OnPatrol();
+    void StartAI(APawn* FPSPawn);
+    void FinishedAI();
 
 public:
     static const FName Pos_StartKey;
     static const FName Pos_EndKey;
+
+#pragma region AI
+private:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
+    TObjectPtr<UBlackboardData> BlackboardDataAsset;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
+    TObjectPtr<UBehaviorTree> BehaviorTree;
+
+#pragma endregion
 };

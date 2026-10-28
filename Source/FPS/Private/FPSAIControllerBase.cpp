@@ -4,7 +4,7 @@
 #include "FPSAIControllerBase.h"
 #include "NavigationSystem.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include <FPS/FPS.h>
+#include "FPS/FPS.h"
 
 const FName AFPSAIControllerBase::Pos_StartKey(TEXT("Pos_Srart"));
 const FName AFPSAIControllerBase::Pos_EndKey(TEXT("Pos_End"));
@@ -19,16 +19,35 @@ void AFPSAIControllerBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle_Patrol, this, &ThisClass::OnPatrol, 2.f, true);
+   /* GetWorld()->GetTimerManager().SetTimer(TimerHandle_Patrol, this, &ThisClass::OnPatrol, 2.f, true);*/
+
+    APawn* FPSPawn = GetPawn();
+    if (true == IsValid(FPSPawn))
+    {
+        StartAI(FPSPawn);
+    }
 }
 
 void AFPSAIControllerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Patrol);
+    //GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Patrol);
 
     Super::EndPlay(EndPlayReason);
+
+    FinishedAI();
 }
 
+void AFPSAIControllerBase::StartAI(APawn* FPSPawn)
+{
+    MYSCREENLOG("StartAI");
+}
+
+void AFPSAIControllerBase::FinishedAI()
+{
+    MYLOG("FinishedAI");
+}
+
+/*
 void AFPSAIControllerBase::OnPatrol()
 {
     //TODO: 타이머에서 호출되는 함수
@@ -55,3 +74,4 @@ void AFPSAIControllerBase::OnPatrol()
         UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, ResultLocation.Location);
     }
 }
+*/
