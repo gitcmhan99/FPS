@@ -5,6 +5,13 @@
 #include "NavigationSystem.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "FPS/FPS.h"
+#include "GameUtil.h"
+
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+
 
 const FName AFPSAIControllerBase::Pos_StartKey(TEXT("Pos_Srart"));
 const FName AFPSAIControllerBase::Pos_EndKey(TEXT("Pos_End"));
@@ -12,7 +19,8 @@ const FName AFPSAIControllerBase::Pos_EndKey(TEXT("Pos_End"));
 
 AFPSAIControllerBase::AFPSAIControllerBase()
 {
-
+    Blackboard = GameUtil::CreateActorComponent<UBlackboardComponent>(this);
+    TreeComponent = GameUtil::CreateActorComponent<UBehaviorTreeComponent>(this);
 }
 
 void AFPSAIControllerBase::BeginPlay()
@@ -40,11 +48,31 @@ void AFPSAIControllerBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AFPSAIControllerBase::StartAI(APawn* FPSPawn)
 {
     MYSCREENLOG("StartAI");
+
+    UBlackboardComponent* ptrBlackboard = Cast<UBlackboardComponent>(Blackboard);
+
+    if (IsValid(ptrBlackboard))
+    {
+        if (UseBlackboard(BlackboardDataAsset, ptrBlackboard))
+        {
+            RunBehaviorTree(BehaviorTree);
+
+            ptrBlackboard->SetValueAsVector(Pos_StartKey, FPSPawn->GetActorLocation());
+
+            MYSCREENLOG("RunBehaviorTree");
+        }
+    }
 }
 
 void AFPSAIControllerBase::FinishedAI()
 {
     MYLOG("FinishedAI");
+
+    UBehaviorTreeComponent* ptrBehaviorTreeComponent = Cast<UBehaviorTreeComponent>(TreeComponent);
+    if (IsValid(ptrBehaviorTreeComponent))
+    {
+        TreeComponent->StopTree();
+    }
 }
 
 /*

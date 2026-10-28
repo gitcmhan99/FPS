@@ -6,6 +6,9 @@
 #include "AIController.h"
 #include "FPSAIControllerBase.generated.h"
 
+class UBlackboardComponent;
+class UBehaviorTreeComponent;
+
 /**
  * 
  */
@@ -42,5 +45,8 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess))
     TObjectPtr<UBehaviorTree> BehaviorTree;
 
+
+    TObjectPtr<UBlackboardComponent> Blackboard;
+    TObjectPtr<UBehaviorTreeComponent> TreeComponent;
 #pragma endregion
 };
