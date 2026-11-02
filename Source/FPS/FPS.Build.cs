@@ -12,6 +12,7 @@ public class FPS : ModuleRules
             "Engine", "InputCore", "EnhancedInput",
             "AIModule", //AI
             "NavigationSystem",
+            "GameplayTasks",
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });
