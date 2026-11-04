@@ -15,6 +15,7 @@
 
 const FName AFPSAIControllerBase::Pos_StartKey(TEXT("Pos_Srart"));
 const FName AFPSAIControllerBase::Pos_EndKey(TEXT("Pos_End"));
+const FName AFPSAIControllerBase::TargetKey(TEXT("Target"));
 
 
 AFPSAIControllerBase::AFPSAIControllerBase()

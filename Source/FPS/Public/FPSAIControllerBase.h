@@ -36,6 +36,7 @@ protected:
 public:
     static const FName Pos_StartKey;
     static const FName Pos_EndKey;
+    static const FName TargetKey;
 
 #pragma region AI
 private:
