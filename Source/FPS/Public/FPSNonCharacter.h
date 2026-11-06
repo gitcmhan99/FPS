@@ -6,6 +6,8 @@
 #include "FPSCharacterBase.h"
 #include "FPSNonCharacter.generated.h"
 
+DECLARE_DELEGATE_TwoParams(FOnAttackMontageEnded, UAnimMontage*, bool )
+
 /**
  * 
  */
@@ -16,4 +18,15 @@ class FPS_API AFPSNonCharacter : public AFPSCharacterBase
 
 public:
     AFPSNonCharacter();
+
+	virtual void BeginAttack();
+
+	virtual void EndAttack(UAnimMontage* InMontage, bool bInterruped);
+
+public:
+	bool bIsNowAttacking;
+
+protected:
+	FOnAttackMontageEnded OnAttackMontageEndedDelegate;
+		// 애니메이션 몽타주 재생이 끝났을 때 호출할 델리게이트.
 };
