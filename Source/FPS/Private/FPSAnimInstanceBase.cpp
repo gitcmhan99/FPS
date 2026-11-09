@@ -46,7 +46,12 @@ void UFPSAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 
     IsFalling = OwnerFPSCM->IsFalling();
 
-    IsDead = OwnerFPSCharacter->GetIsDead();
+    //IsDead = OwnerFPSCharacter->GetIsDead();
+
+    if (IsValid(OwnerFPSCharacter->GetStatusComponents()))
+    {
+        IsDead = OwnerFPSCharacter->GetStatusComponents()->bIsDead;
+    }
 }
 
 void UFPSAnimInstanceBase::AnimNotify_CheckAttack()

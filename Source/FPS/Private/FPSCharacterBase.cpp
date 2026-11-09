@@ -55,7 +55,8 @@ AFPSCharacterBase::AFPSCharacterBase()
     //Collision Preset( Collision 프로파일 ) "FPSChannel"로 지정
     GetMesh()->SetCollisionProfileName(TEXT("FPSChannel"));
 
-    IsDead = false;
+    //IsDead = false;
+    StatusComponent = GameUtil::CreateActorComponent<UFPSStatusComponent>(this);
 }
 
 // Called when the game starts or when spawned
@@ -517,17 +518,25 @@ float AFPSCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 {
      float damageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-     //TODO: 여기에 Damage 처리
-     CurrentHP = FMath::Clamp(CurrentHP - damageAmount, 0.f, MaxHP);
-     if (CurrentHP < KINDA_SMALL_NUMBER)
+     StatusComponent->ApplyDamage(damageAmount);
+
+     if (StatusComponent->bIsDead == true)
      {
-         IsDead = true;
-         CurrentHP = 0.0f;
          GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
          GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
      }
 
-     MYSCREENLOG("%s [%.1f / %.1f]", *GetName(), CurrentHP, MaxHP);
+     //TODO: 여기에 Damage 처리
+     //CurrentHP = FMath::Clamp(CurrentHP - damageAmount, 0.f, MaxHP);
+     //if (CurrentHP < KINDA_SMALL_NUMBER)
+     //{
+     //    IsDead = true;
+     //    CurrentHP = 0.0f;
+     //    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+     //    GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+     //}
+
+     MYSCREENLOG("%s [%.1f / %.1f]", *GetName(), StatusComponent->CurrentHP, StatusComponent->MaxHP);
 
      return damageAmount;
 }

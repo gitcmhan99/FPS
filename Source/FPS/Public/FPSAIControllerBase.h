@@ -17,6 +17,8 @@ class FPS_API AFPSAIControllerBase : public AAIController
 {
 	GENERATED_BODY()
 
+    friend class AFPSNonCharacter;
+
 public:
     AFPSAIControllerBase();
 
@@ -31,6 +33,8 @@ protected:
 //    void OnPatrol();
 
     void StartAI(APawn* FPSPawn);
+
+public:
     void FinishedAI();
 
 public:

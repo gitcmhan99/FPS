@@ -10,6 +10,7 @@ enum class EViewType : uint8
     QUARTER_VIEW,
 };
 
+#include "FPSStatusComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
@@ -19,6 +20,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UFPSInputActions;
+//class UFPSStatusComponent;
 
 UCLASS()
 class FPS_API AFPSCharacterBase : public ACharacter
@@ -97,6 +99,8 @@ public:
 #pragma endregion
 
 #pragma region [ HP ]
+
+    /*
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float MaxHP = 100.0f;
@@ -113,6 +117,14 @@ public:
     float GetIsDead() const { return IsDead; }
     void SetMaxHP(float value) { MaxHP = value; }
     void SetCurrent(float value) { CurrentHP = value; }
+    */
+
+protected:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess))
+    TObjectPtr<UFPSStatusComponent> StatusComponent;
+
+public:
+    UFPSStatusComponent* GetStatusComponents() { return StatusComponent; }
 
 public:
     UFUNCTION()

@@ -6,6 +6,7 @@
 #include "FPSGameInstance.h"
 #include "FPSAnimInstanceBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include <FPS/FPS.h>
 
 AFPSNonCharacter::AFPSNonCharacter()
     : bIsNowAttacking(false)
@@ -38,6 +39,8 @@ void AFPSNonCharacter::BeginAttack()
 
 void AFPSNonCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 {
+    MYSCREENLOG("EndAttack");
+
     GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 
     bIsNowAttacking = false;
@@ -46,5 +49,23 @@ void AFPSNonCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
     {
         OnAttackMontageEndedDelegate.Unbind();
     }
+}
+
+float AFPSNonCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    float FinalDamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+    MYSCREENLOG("AFPSNonCharacter::TakeDamage %f", DamageAmount);
+
+    if (StatusComponent->bIsDead == true)
+    {
+        AFPSAIControllerBase* AIController = Cast<AFPSAIControllerBase>(GetController());
+        if (IsValid(AIController) == true)
+        {
+            AIController->FinishedAI();
+        }
+    }
+
+    return FinalDamageAmount;
 }
 
