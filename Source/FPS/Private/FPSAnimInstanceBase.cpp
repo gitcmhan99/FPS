@@ -38,11 +38,17 @@ void UFPSAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 
     FVector acceleration = OwnerFPSCM->GetCurrentAcceleration();
     float fAcceleration = UKismetMathLibrary::VSizeXY(acceleration);
+
+    //AI 이동(MoveTo, 네비메시 경로 추적)은 가속도를 거의 안 씁니다.
+    //등속 이동 중에는 가속도가 0입니다. 최고속도에 도달해 일정 속도로 걸으면 가속도는 정의상 0이 됩니다.
     //fAcceleration == 0 // 걷지X
-    bool IsNearlyZero = FMath::IsNearlyZero(fAcceleration);
+    /*bool IsNearlyZero = FMath::IsNearlyZero(fAcceleration);
 
     IsMove = (IsNearlyZero == false &&
-              fSpeed > KINDA_SMALL_NUMBER);
+              fSpeed > KINDA_SMALL_NUMBER);*/
+
+    //수정은 한가지 값만 체크하도록 수정
+    IsMove = fSpeed > KINDA_SMALL_NUMBER; 
 
     IsFalling = OwnerFPSCM->IsFalling();
 
