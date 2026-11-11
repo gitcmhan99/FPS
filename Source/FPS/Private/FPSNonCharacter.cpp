@@ -6,7 +6,11 @@
 #include "FPSGameInstance.h"
 #include "FPSAnimInstanceBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include <FPS/FPS.h>
+#include "FPS/FPS.h"
+#include "WidgetHudComponent.h"
+#include "WidgetHudBase.h"
+#include "GameUtil.h"
+
 
 AFPSNonCharacter::AFPSNonCharacter()
     : bIsNowAttacking(false)
@@ -15,6 +19,11 @@ AFPSNonCharacter::AFPSNonCharacter()
 
     AIControllerClass = AFPSAIControllerBase::StaticClass();
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+    WidgetHudComponent = GameUtil::CreateComponent<UWidgetHudComponent>(this);
+
+    WidgetHudComponent->SetWidgetSpace(EWidgetSpace::World);
+    WidgetHudComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AFPSNonCharacter::BeginAttack()

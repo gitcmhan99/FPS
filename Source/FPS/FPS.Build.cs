@@ -13,6 +13,7 @@ public class FPS : ModuleRules
             "AIModule", //AI
             "NavigationSystem",
             "GameplayTasks",
+            "UMG"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {  });

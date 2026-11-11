@@ -35,7 +35,7 @@ public:
 
     float ApplyDamage(float damage);
 
-    float GetMapHP() const { return MaxHP; }
+    float GetMaxHP() const { return MaxHP; }
 
 protected:
 	// Called when the game starts

@@ -8,6 +8,9 @@
 
 DECLARE_DELEGATE_TwoParams(FOnAttackMontageEnded, UAnimMontage*, bool )
 
+class UWidgetHudComponent;
+class UWidgetHudBase;
+
 /**
  * 
  */
@@ -30,4 +33,7 @@ public:
 protected:
 	FOnAttackMontageEnded OnAttackMontageEndedDelegate;
 		// 애니메이션 몽타주 재생이 끝났을 때 호출할 델리게이트.
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<UWidgetHudComponent> WidgetHudComponent;
 };
