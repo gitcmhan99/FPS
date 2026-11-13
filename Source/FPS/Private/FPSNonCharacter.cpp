@@ -10,6 +10,9 @@
 #include "WidgetHudComponent.h"
 #include "WidgetHudBase.h"
 #include "GameUtil.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "FPSStatusComponent.h"
 
 
 AFPSNonCharacter::AFPSNonCharacter()
@@ -76,5 +79,32 @@ float AFPSNonCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
     }
 
     return FinalDamageAmount;
+}
+
+void AFPSNonCharacter::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    if (IsValid(WidgetHudComponent))
+    {
+        FVector widigetHudPos = WidgetHudComponent->GetComponentLocation();
+        FVector LocalPlayerCameraLocation = UGameplayStatics::GetPlayerCameraManager(this, 0)->GetCameraLocation();
+
+        FRotator rotator = UKismetMathLibrary::FindLookAtRotation(widigetHudPos, LocalPlayerCameraLocation);
+        WidgetHudComponent->SetWorldRotation(rotator);
+    }
+
+    //StatusComponent
+}
+
+void AFPSNonCharacter::SetHPTextWidget(UWidgetHudBase* HPTextWidget)
+{
+    if (IsValid(HPTextWidget))
+    {
+        HPTextWidget->InitHPText(StatusComponent);
+
+        StatusComponent->OnMaxHPChange.AddUObject(HPTextWidget, &UWidgetHudBase::OnMaxHP);
+        StatusComponent->OnCurretHPChange.AddUObject(HPTextWidget, &UWidgetHudBase::OnCurrentHP);
+    }
 }
 

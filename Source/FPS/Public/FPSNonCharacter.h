@@ -9,7 +9,7 @@
 DECLARE_DELEGATE_TwoParams(FOnAttackMontageEnded, UAnimMontage*, bool )
 
 class UWidgetHudComponent;
-class UWidgetHudBase;
+class UWidgetHudBase; //HPText UI
 
 /**
  * 
@@ -27,6 +27,11 @@ public:
 	virtual void EndAttack(UAnimMontage* InMontage, bool bInterruped);
 
     virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+    virtual void Tick(float DeltaSeconds) override;
+
+    void SetHPTextWidget(UWidgetHudBase* HPTextWidget);
+
 public:
 	bool bIsNowAttacking;
 

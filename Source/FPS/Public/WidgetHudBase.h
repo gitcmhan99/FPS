@@ -9,6 +9,7 @@
 class UFPSStatusComponent;
 class UTextBlock;
 
+
 /**
  * 
  */
@@ -22,7 +23,7 @@ public:
 
     virtual void NativeConstruct() override;
 
-    void InitHPText(UFPSStatusComponent& StatusComponent);
+    void InitHPText(UFPSStatusComponent* StatusComponent);
 
     void SetOwner(AActor* owner) { Owner = owner; }
 
@@ -34,4 +35,11 @@ protected:
     TObjectPtr<UTextBlock> TextBlock_Max;
 
     TObjectPtr<AActor> Owner;
+
+public:
+    UFUNCTION()
+    void OnMaxHP(float maxHP);
+
+    UFUNCTION()
+    void OnCurrentHP(float currentHP);
 };
